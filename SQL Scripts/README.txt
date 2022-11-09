@@ -1,6 +1,9 @@
+#########################################
+# DO NOT OPEN CSV FILE USING EXCEL
+#########################################
+
 1. Execute '01-table creations.sql' for DB and table creation
-2. Execute the insert scripts (files inside 02-insert scripts)
-4. Import data from '03-data for import' to the respective tables
+2. Import data from '02-data for import' to the respective tables
  - Right click on the table
  - Table Data Import Wizard
  - File (same with table name)

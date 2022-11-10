@@ -76,3 +76,19 @@ create table if not exists `pr_admission_by_noc` (
 		references provinces (province_code)
         on update cascade on delete cascade
 );
+
+create table if not exists `pr_admission_by_immigration_category` (
+	id int not null auto_increment comment 'auto-generated id',
+    immi_code varchar(5) not null comment 'immigration code',
+    province_code char(2) not null comment 'province code',
+    year char(4) not null comment 'year of the PR approval',
+    month varchar(10) not null comment 'month of the PR approval',
+    total_approval int comment 'total number of PR approvals',
+    primary key (id),
+    foreign key (immi_code) 
+		references immigration_category (immi_code)
+        on update cascade on delete cascade,
+	foreign key (province_code) 
+		references provinces (province_code)
+        on update cascade on delete cascade
+);

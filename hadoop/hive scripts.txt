@@ -1,0 +1,169 @@
+set hive.cli.print.current.db=true;
+set hive.cli.print.header=true;
+
+-----------------------------------------
+-- DATABASE CREATION
+-----------------------------------------
+
+create database bdm1043;
+
+use bdm1043;
+
+-----------------------------------------
+-- PROVINCES
+-----------------------------------------
+
+create table if not exists provinces (
+province_code string comment 'province code',
+province_name string comment 'province name',
+region string comment 'region name'
+)
+row format delimited
+fields terminated by ','
+lines terminated by '\n'
+stored as textfile
+tblproperties ("skip.header.line.count"="1");
+
+load data local inpath '<dir>/provinces.csv'
+into table provinces;
+
+-----------------------------------------
+-- AGE_GROUP
+-----------------------------------------
+
+create table if not exists age_group (
+age_group_id int comment 'age group id',
+age_group_desc string comment 'age group description'
+)
+row format delimited
+fields terminated by ','
+lines terminated by '\n'
+stored as textfile
+tblproperties ("skip.header.line.count"="1");
+
+load data local inpath '<dir>/age_group.csv'
+into table age_group;
+
+-----------------------------------------
+-- IMMIGRATION_CATEGORY
+-----------------------------------------
+
+create table if not exists immigration_category (
+immi_code string comment 'immigration code',
+immi_type string comment 'immigration type'
+)
+row format delimited
+fields terminated by ','
+lines terminated by '\n'
+stored as textfile;
+
+load data local inpath '<dir>/immigration_category.csv'
+into table immigration_category;
+
+-----------------------------------------
+-- NATIONAL_OCCUPATIONAL_CATEGORY
+-----------------------------------------
+
+create table if not exists national_occupational_category (
+noc_code string comment 'national occupational category code',
+job_title string comment 'job title',
+skill_type string comment 'skill type: 0, A, B, C or D'
+)
+row format delimited
+fields terminated by '|'
+lines terminated by '\n'
+stored as textfile
+tblproperties ("skip.header.line.count"="1");
+
+load data local inpath '<dir>/national_occupational_category.csv'
+into table national_occupational_category;
+
+-----------------------------------------
+-- PR_ADMISSION_BY_AGE_GROUP
+-----------------------------------------
+
+create table if not exists pr_admission_by_age_group (
+age_group_id int comment 'age group id',
+province_code string comment 'province code',
+year int comment 'year of the PR approval',
+month string comment 'month of the PR approval',
+total_approval int comment 'total number of PR approvals'
+)
+row format delimited
+fields terminated by ','
+lines terminated by '\n'
+stored as textfile
+tblproperties ("skip.header.line.count"="1");
+
+load data local inpath '<dir>/pr_admission_by_age_group.csv'
+into table pr_admission_by_age_group;
+
+-----------------------------------------
+-- PR_ADMISSION_BY_NOC
+-----------------------------------------
+
+create table if not exists pr_admission_by_noc (
+noc_code string comment 'national occupational category code',
+province_code string comment 'province code',
+year int comment 'year of the PR approval',
+month string comment 'month of the PR approval',
+total_approval int comment 'total number of PR approvals'
+)
+row format delimited
+fields terminated by ','
+lines terminated by '\n'
+stored as textfile
+tblproperties ("skip.header.line.count"="1");
+
+load data local inpath '<dir>/pr_admission_by_noc.csv'
+into table pr_admission_by_noc;
+
+-----------------------------------------
+-- PR_ADMISSION_BY_IMMIGRATION_CATEGORY
+-----------------------------------------
+
+create table if not exists pr_admission_by_immigration_category (
+immi_code string comment 'immigration code',
+province_code string comment 'province code',
+year int comment 'year of the PR approval',
+month string comment 'month of the PR approval',
+total_approval int comment 'total number of PR approvals'
+)
+row format delimited
+fields terminated by ','
+lines terminated by '\n'
+stored as textfile
+tblproperties ("skip.header.line.count"="1");
+
+load data local inpath '<dir>/pr_admission_by_immigration_category.csv'
+into table pr_admission_by_immigration_category;
+
+-----------------------------------------
+-- VIEW FOR PR_ADMISSION_BY_AGE_GROUP
+-----------------------------------------
+
+create view if not exists vw_pr_admission_by_age_group 
+as select a.age_group_desc, p.province_code, p.province_name, pr.year, pr.month, pr.total_approval 
+from pr_admission_by_age_group pr 
+inner join provinces p on pr.province_code = p.province_code
+full outer join age_group a on pr.age_group_id = a.age_group_id;
+
+-----------------------------------------
+-- VIEW FOR PR_ADMISSION_BY_NOC
+-----------------------------------------
+
+create view if not exists vw_pr_admission_by_noc 
+as select n.noc_code, n.job_title, n.skill_type, p.province_name, pr.year, pr.month, pr.total_approval 
+from pr_admission_by_noc pr 
+inner join provinces p on pr.province_code = p.province_code
+full outer join national_occupational_category n on pr.noc_code = n.noc_code;
+
+-------------------------------------------------
+-- VIEW FOR PR_ADMISSION_BY_IMMIGRATION_CATEGORY
+-------------------------------------------------
+
+create view if not exists vw_pr_admission_by_immigration_category 
+as select i.immi_type, p.province_name, pr.year, pr.month, pr.total_approval 
+from pr_admission_by_immigration_category pr 
+inner join provinces p on pr.province_code = p.province_code
+full outer join immigration_category i on pr.immi_code  = i.immi_code;

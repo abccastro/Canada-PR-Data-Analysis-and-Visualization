@@ -55,7 +55,8 @@ immi_type string comment 'immigration type'
 row format delimited
 fields terminated by ','
 lines terminated by '\n'
-stored as textfile;
+stored as textfile
+tblproperties ("skip.header.line.count"="1");
 
 load data local inpath '<dir>/immigration_category.csv'
 into table immigration_category;
@@ -143,7 +144,7 @@ into table pr_admission_by_immigration_category;
 -----------------------------------------
 
 create view if not exists vw_pr_admission_by_age_group 
-as select a.age_group_desc, p.province_code, p.province_name, pr.year, pr.month, pr.total_approval 
+as select a.age_group_desc, p.province_name, p.province_code, pr.year, pr.month, pr.total_approval 
 from pr_admission_by_age_group pr 
 inner join provinces p on pr.province_code = p.province_code
 full outer join age_group a on pr.age_group_id = a.age_group_id;
@@ -153,7 +154,7 @@ full outer join age_group a on pr.age_group_id = a.age_group_id;
 -----------------------------------------
 
 create view if not exists vw_pr_admission_by_noc 
-as select n.noc_code, n.job_title, n.skill_type, p.province_name, pr.year, pr.month, pr.total_approval 
+as select n.noc_code, n.job_title, n.skill_type, p.province_name, p.province_code, pr.year, pr.month, pr.total_approval 
 from pr_admission_by_noc pr 
 inner join provinces p on pr.province_code = p.province_code
 full outer join national_occupational_category n on pr.noc_code = n.noc_code;
@@ -163,7 +164,7 @@ full outer join national_occupational_category n on pr.noc_code = n.noc_code;
 -------------------------------------------------
 
 create view if not exists vw_pr_admission_by_immigration_category 
-as select i.immi_type, p.province_name, pr.year, pr.month, pr.total_approval 
+as select i.immi_type, p.province_name, p.province_code, pr.year, pr.month, pr.total_approval 
 from pr_admission_by_immigration_category pr 
 inner join provinces p on pr.province_code = p.province_code
 full outer join immigration_category i on pr.immi_code  = i.immi_code;

@@ -1,4 +1,4 @@
-# Canada PR Data Visualization
+# Canada PR Data Analysis and Visualization
 Provide data visualization and insights on Canada’s Permanent Residence (PR) approvals for the last 5.75 years (from January 2017 to September 2022)
 
 The scope for data visualization and analysis:
